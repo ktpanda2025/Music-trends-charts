@@ -2,7 +2,6 @@ from YT_Scraper import  get_dates_until_current, fetch_top_songs
 import json
 import pandas as pd
 
-#kill terminal and restart it
 
 start_date = "20170921"
 dates = get_dates_until_current(start_date)
@@ -36,5 +35,7 @@ for week_start_date in dates[1:]:
         })
 
 YT_song_rank = pd.DataFrame(data_list)
+
+# Save the data to a CSV file into the Chart_Data_2 folder with the path /Users/kevintorres/Desktop/GitHub/Music-trends-charts/Chart_Data_2
 YT_song_rank.to_csv("Chart_Data_2/YT_song_rank.csv", index=False)
 

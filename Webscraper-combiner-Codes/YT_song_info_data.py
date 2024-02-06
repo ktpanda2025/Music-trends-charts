@@ -1,13 +1,13 @@
-from YT-Scraper import get_dates_until_current, fetch_top_songs
+from YT_Scraper import  get_dates_until_current, fetch_top_songs
 import json
 import pandas as pd
 
+#kill terminal and restart it
 
-# Example: Starting date is 20170921
 start_date = "20170921"
 dates = get_dates_until_current(start_date)
 
-
+print(dates)
 
 
 data_list = []
@@ -16,9 +16,9 @@ data_list = []
 for week_start_date in dates[1:]:
     response = fetch_top_songs(week_start_date, "TRACKS")
     top_song_data = response.json()["contents"]['sectionListRenderer']['contents'][0]['musicAnalyticsSectionRenderer']['content']['trackTypes'][0]['trackViews']
-
+    print("fdfdfdfdfdf")
     for song in  top_song_data:
-
+      
         try:
             # Try to access 'title' key in vid_2 since some videos have been taken down
             song_vid_title = song['name']
@@ -36,3 +36,5 @@ for week_start_date in dates[1:]:
         })
 
 YT_song_rank = pd.DataFrame(data_list)
+YT_song_rank.to_csv("Chart_Data_2/YT_song_rank.csv", index=False)
+

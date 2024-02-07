@@ -1,4 +1,6 @@
 # artist scraper
+#fine accsess to Yt_scraper
+
 from YT_Scraper import  get_dates_until_current, fetch_top_songs
 import json
 import pandas as pd

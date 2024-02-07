@@ -1,0 +1,61 @@
+
+import pandas as pd
+import plotly.express as px
+import plotly.offline as pyo
+
+
+
+Artist_rank =pd.read_csv("/content/drive/MyDrive/sta 141b final codes file /chart_data/Youtube_chart_artist_ranks.csv").sort_values(by='WeekStartDate', ascending=False)
+Artist_rank['WeekStartDate'] = pd.to_datetime(Artist_rank['WeekStartDate'], format='%Y%m%d')
+Artist_rank = Artist_rank[Artist_rank['WeekStartDate']>='2020']
+YT_Artist_rank = Artist_rank.rename(columns={'Name':'artist','WeekStartDate':'WeekDate'})
+
+
+Song_rank =pd.read_csv("/content/drive/MyDrive/sta 141b final codes file /chart_data/Youtube_chart_song_ranks.csv").sort_values(by='WeekStartDate', ascending=False)
+Song_rank['WeekStartDate'] = pd.to_datetime(Song_rank['WeekStartDate'], format='%Y%m%d')
+Song_rank= Song_rank[Song_rank['WeekStartDate'] >='2020']
+YT_Song_rank = Song_rank.rename(columns={'WeekStartDate':'WeekDate',"SongTitle": 'track_name'})
+
+
+def spotify_chart(artist_name):
+    #how to make the function know only to take in strings
+    assert isinstance(artist_name, str), 'Strings only!'
+
+    Spotify_chart = pd.read_csv("Chart_Data_2/Spotify_chart_song_ranks.csv").sort_values(by='WeekDate', ascending=False)
+    Spotify_chart ['WeekStartDate'] = pd.to_datetime(Spotify_chart['WeekDate'], format='%Y-%m-%d')
+    Spotify_chart = Spotify_chart[['rank', 'artist_names', 'track_name', 'streams', 'WeekDate']]
+    Spotify_chart = Spotify_chart [Spotify_chart['rank']<=100 ]
+    spotify_chart = Spotify_chart.rename(columns={'artist_names':'artist'})
+
+
+
+
+    Song_rank = spotify_chart
+    type_stream = "streams"
+    platform = "Youtube" if type_stream  == "ViewCount" else "Spotify"
+
+
+    data = Song_rank[Song_rank['artist'].str.contains(artist_name, case=False)]
+
+
+    spotify_groupbysong = data.groupby('track_name').agg(        # this part is for seeing many times song pop up on the charts and it min and max date on it, not on graphs
+        Appearances=pd.NamedAgg(column='rank', aggfunc='size'),
+        FirstAppearance=pd.NamedAgg(column='WeekDate', aggfunc='min'),
+        LastAppearance=pd.NamedAgg(column='WeekDate', aggfunc='max'),
+    )
+
+    spotify_groupbysong = spotify_groupbysong.reset_index().sort_values(by='FirstAppearance', ascending=True)
+
+
+    fig_spot = px.line(data, x='WeekDate', y= type_stream, color='track_name',
+                title=f'Weekly Streams of Artist songs in the Top 100 for {artist_name} on {platform}',
+                markers=True)  # Add markers to data points
+
+
+    fig_spot.update_xaxes(title_text='Week')
+    fig_spot.update_yaxes(title_text='Streams per Week')
+
+    fig_spot.update_xaxes(rangeslider_visible=True)
+
+    # Show the plot
+    print(fig_spot.show())
